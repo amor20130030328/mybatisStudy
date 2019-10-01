@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gy.mapper.EmployeeMapper">
+
+  <resultMap type="com.gy.bean.Employee" id="employeeMap">
+  	<id column="id" property="id"/>
+  	<result column="last_name" property="lastName"/>
+  	<result column="email" property="email"/>
+  	<result column="gender" property="gender"/>
+  </resultMap>
+
+  <select id="queryById" resultMap="employeeMap">
+  	select * from employee where id = #{id}
+  </select>
+
+</mapper>
