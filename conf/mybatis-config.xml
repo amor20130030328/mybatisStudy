@@ -3,20 +3,95 @@
   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-  <environments default="development">
-    <environment id="development">
+
+
+  <!-- 
+		resource  引入类路径下的资源 
+		url: 引入网络路径或磁盘路径下的资源
+  -->
+  <properties resource="db.properties"></properties>
+  <settings>
+  	<!-- 驼峰命名法 -->
+  	<setting name="mapUnderscoreToCamelCase" value="true"/>
+  </settings>
+  
+  <!-- 别名处理器 (别名不区分大小写)-->
+  <typeAliases>
+  	<!-- 只能起一个别名 -->
+  	<typeAlias type="com.gy.bean.Department" alias="Department"/>
+  
+  	<!-- 批量设置别名  -->
+  	<package name="com.gy.bean"/> 
+  
+  </typeAliases>
+  
+
+  <!-- default ：默认使用的环境ID -->
+  <environments default="mysql">
+  
+  	
+    <environment id="mysql">
+    
+      <!-- type: 事务管理器的类型  JDBC|MANAGED -->
       <transactionManager type="JDBC"/>
+      <!-- 
+      	数据源的type : 
+      	有三种内建数据源类型 [UNPOOLED|POOLED|JNDI] 
+		      	typeAliasRegistry.registerAlias("JNDI", JndiDataSourceFactory.class);
+		    	typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
+		    	typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
+     	自定义数据源: 实现   : DataSourceFactory 接口
+       -->
       <dataSource type="POOLED">
-        <property name="driver" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql:///mybatis"/>
-        <property name="username" value="root"/>
-        <property name="password" value="root"/>
+        <property name="driver" value="${driverClass}"/>
+        <property name="url" value="${jdbcUrl}"/>
+        <property name="username" value="${user}"/>
+        <property name="password" value="${password}"/>
+      </dataSource>
+    </environment>
+    
+     <environment id="oracle">
+    
+      <!-- type: 事务管理器的类型  JDBC|MANAGED -->
+      <transactionManager type="JDBC"/>
+      <!-- 
+      	数据源的type : 
+      	有三种内建数据源类型 [UNPOOLED|POOLED|JNDI] 
+		      	typeAliasRegistry.registerAlias("JNDI", JndiDataSourceFactory.class);
+		    	typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
+		    	typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
+     	自定义数据源: 实现   : DataSourceFactory 接口
+       -->
+      <dataSource type="POOLED">
+        <property name="driver" value="${orcl.driverClass}"/>
+        <property name="url" value="${orcl.jdbcUrl}"/>
+        <property name="username" value="${orcl.user}"/>
+        <property name="password" value="${orcl.password}"/>
       </dataSource>
     </environment>
   </environments>
   
+  <!-- 
+  	databaseIdProvider : 支持多数据库厂商的
+  "DB_VENDOR" : VendorDatabaseIdProvider.class
+    作用就是得到数据库厂商的标识，mybatis就能根据数据库厂商
+    标识来执行不同的sql
+   -->
+  <databaseIdProvider type="db_vendor">
+  	<!-- 为不同的数据库厂商起别名  -->
+  	<property name="MySQL" value="mysql"/>
+  	<property name="Oracle" value="oracle"/>
+  	<property name="SQL Server" value="sqlserver"/>
+  </databaseIdProvider>
+  
+
+  
   <!-- 全局配置文件 -->
   <mappers>
-     <mapper resource="com/gy/mapper/EmployeeMapper.xml"/> 
+      <mapper resource="com/gy/mapper/EmployeeMapper.xml"/>
+      <mapper resource="com/gy/mapper/DepartmentMapper.xml"/>  
+      <mapper resource="com/gy/mapper/JobMapper.xml"/>  
+  	  
+  
   </mappers>
 </configuration>

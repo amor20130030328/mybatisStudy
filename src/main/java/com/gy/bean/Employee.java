@@ -1,5 +1,7 @@
 package com.gy.bean;
 
+import com.gy.constant.GenderEnum;
+
 public class Employee {
 	
 	private Integer id;
@@ -60,7 +62,7 @@ public class Employee {
 
 	@Override
 	public String toString() {
-		return "Employee [id=" + id + ", lastName=" + lastName + ", gender=" + gender + ", email=" + email + "]";
+		return "Employee [id=" + id + ", lastName=" + lastName + ", gender=" + GenderEnum.Parse(gender) + ", email=" + email + "]";
 	}
 	
 	
