@@ -16,6 +16,7 @@ import com.gy.bean.Employee;
 import com.gy.bean.Job;
 import com.gy.mapper.DepartmentMapper;
 import com.gy.mapper.EmployeeMapper;
+import com.gy.mapper.EmployeeMapperAnnotation;
 import com.gy.mapper.JobMapper;
 
 /**
@@ -76,5 +77,18 @@ public class TestCon_Interfer {
 		Job job = jobMapper.queryById(2);
 		System.err.println(job);
 	}
+	
+	
+	/**
+	 * 基于注解的映射方式
+	 */
+	@Test
+	public void test4() {
+		EmployeeMapperAnnotation employeeMapper = session.getMapper(EmployeeMapperAnnotation.class);
+		Employee employee = employeeMapper.queryById(2);
+		System.err.println(employee);
+	}
+	
+	
 
 }

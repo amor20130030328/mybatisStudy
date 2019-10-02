@@ -18,10 +18,55 @@
   	select * from employee where id = #{id}
   </select> 
   
+  <select id="queryByIdAndName" resultMap="employeeMap">
+  	select * from employee where id = #{id} and last_name = #{lastName}
+  </select>
+  
   <select id="queryById" resultType="com.gy.bean.Employee"
   	databaseId="oracle">
   	select EMPLOYEE_ID id,LAST_NAME lastName,EMAIL email,
   	GENDER gender from employee where EMPLOYEE_ID = #{id}
   </select>
+  
+  <!-- 
+   	获取自增主键
+     	使用自增主键获取主键值 策略    useGeneratedKeys="true" 
+  		查出的主键值封装给 JavaBean的  某个(id的位置) 属性
+  -->
+  <insert id="addEmp" parameterType="com.gy.bean.Employee" useGeneratedKeys="true"
+  		keyProperty="id" databaseId="mysql">
+  	INSERT INTO employee (last_name,email,gender)
+  	VALUES(#{lastName},#{email},#{gender})
+  </insert>
+  
+  <insert id="addEmp"  databaseId="oracle">
+  	<!-- 
+  	
+  	查出的主键值封装给 JavaBean的  某个(id的位置) 属性
+  	order="BEFORE" 当前sql在插入之前执行
+  	resultType="Integer" : 查询的数据的返回值类型
+  	
+  	执行顺序: 先执行selectKey中的语句，查询出id 的值
+  		     赋值给keyProperty的属性，
+  	
+  	 -->
+
+  	<selectKey keyProperty="id" order="BEFORE" resultType="Integer">
+  		SELECT EMP_SQE.nextVal from dual 
+  	</selectKey>
+	  	INSERT INTO employee (employee_id,last_name,email,gender)
+	  	VALUES(#{id},#{lastName},#{email},#{gender})
+  </insert>
+  
+  <update id="updateEmp">
+  	UPDATE employee
+  	SET last_name = #{lastName},email = #{email} ,gender = #{gender}
+  	WHERE id = #{id}
+  </update>
+  
+  <delete id="deleteEmp">
+  	DELETE from employee where id = #{id}
+  </delete>
+  
 
 </mapper>
