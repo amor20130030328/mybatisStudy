@@ -12,11 +12,11 @@ public class Employee {
 	
 	private String email;
 	
+	private Department department;
+	
 	public Employee() {
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 
 	public Employee(Integer id, String lastName, String gender, String email) {
 		super();
@@ -58,12 +58,18 @@ public class Employee {
 		this.email = email;
 	}
 
+	public Department getDepartment() {
+		return department;
+	}
 
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
 
 	@Override
 	public String toString() {
-		return "Employee [id=" + id + ", lastName=" + lastName + ", gender=" + GenderEnum.Parse(gender) + ", email=" + email + "]";
+		return "Employee [id=" + id + ", lastName=" + lastName + ", gender=" + gender + ", email=" + email
+				+ ", department=" + department + "]";
 	}
-	
-	
+
 }

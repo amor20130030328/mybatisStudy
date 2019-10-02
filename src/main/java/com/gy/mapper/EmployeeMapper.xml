@@ -4,11 +4,97 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gy.mapper.EmployeeMapper">
 
-  <resultMap type="employee" id="employeeMap">
+
+
+  <!-- 简单的映射 -->
+  <resultMap type="com.gy.bean.Employee" id="employeeSimple">
   	<id column="id" property="id"/>
+  	<!-- result 定义普通列的封装规则 -->
   	<result column="last_name" property="lastName"/>
   	<result column="email" property="email"/>
   	<result column="gender" property="gender"/>
+  </resultMap>
+
+  <!-- 
+  	关联查询: 2,3 需要自己写出关联的查询语句  (一般多表)【嵌套结果集】
+  			 1,直接写查询的pojo对应的表        (一般单表) 【分布查询】
+  
+   -->
+
+   
+   
+  <!-- 
+  	自定义结果集映射规则
+  	
+  	type : 自定义结果集的java类型
+  	id   : 唯一的id,方便引用
+  	分步查询
+   -->
+  <resultMap type="employee" id="employeeMap">
+  	<!-- id 指定主键列的封装规则 (底层会有优化), -->
+  	<id column="id" property="id"/>
+  	<!-- result 定义普通列的封装规则 -->
+  	<result column="last_name" property="lastName"/>
+  	<result column="email" property="email"/>
+  	<result column="gender" property="gender"/>
+  	<association property="department" 
+  	javaType="com.gy.bean.Department"
+  	column="dept_id" select="com.gy.mapper.DepartmentMapper.queryById"></association>
+  </resultMap>
+  
+  <!-- 嵌套结果集 -->
+  <resultMap type="employee" id="employeeMapTwo">
+	  <!-- id 指定主键列的封装规则 (底层会有优化), -->
+	  	<id column="id" property="id"/>
+	  	<!-- result 定义普通列的封装规则 -->
+	  	<result column="lastName" property="lastName"/>
+	  	<result column="email" property="email"/>
+	  	<result column="gender" property="gender"/>
+	  	<association javaType="com.gy.bean.Department" property="department" column="dept_id">
+	  		<id property="id" column="deptId"/>
+	  		<result property="location" column="location"/>
+	  		<result property="deptName" column="dept_name"/> 		
+	  	</association>
+  </resultMap>
+  
+  <resultMap type="employee" id="employeeMapThree">
+	  <!-- id 指定主键列的封装规则 (底层会有优化), -->
+	  	<id column="id" property="id"/>
+	  	<!-- result 定义普通列的封装规则 -->
+	  	<result column="lastName" property="lastName"/>
+	  	<result column="email" property="email"/>
+	  	<result column="gender" property="gender"/>
+	  	
+  		<association javaType="com.gy.bean.Department" property="department" column="dept_id">
+	  		<id property="id" column="deptId"/>
+	  		<result property="location" column="location"/>
+	  		<result property="deptName" column="dept_name"/> 		
+	  	</association>		
+  </resultMap>
+  
+  <!-- 有鉴别器的映射 -->
+  <resultMap type="com.gy.bean.Employee" id="employeeDis">
+   <!-- id 指定主键列的封装规则 (底层会有优化), -->
+	  	<id column="id" property="id"/>
+	  	<!-- result 定义普通列的封装规则 -->
+	  	<result column="last_name" property="lastName"/>
+	  	<result column="email" property="email"/>
+	  	<result column="gender" property="gender"/>
+	  	<discriminator javaType="string" column="gender">
+	  		<case value="1" resultType="com.gy.bean.Employee">
+	  			<association property="department" 
+  					javaType="com.gy.bean.Department"
+  					column="dept_id" select="com.gy.mapper.DepartmentMapper.queryById"></association>
+	  		</case>
+	  		<case value="0" resultType="com.gy.bean.Employee">
+	  			<id column="id" property="id"/>
+			  	<!-- result 定义普通列的封装规则 -->
+			  	<result column="last_name" property="lastName"/>
+			  	<result column="last_name" property="email"/>
+			  	<result column="gender" property="gender"/>
+	  		</case>
+	  	</discriminator>
+  
   </resultMap>
 
 
@@ -19,13 +105,36 @@
   </select> 
   
   <select id="queryByIdAndName" resultMap="employeeMap">
-  	select * from employee where id = #{id} and last_name = #{lastName}
+  	select * from employee where id = ${id} and last_name = #{lastName}
   </select>
   
-  <select id="queryById" resultType="com.gy.bean.Employee"
-  	databaseId="oracle">
+  <select id="queryById" resultType="com.gy.bean.Employee">
   	select EMPLOYEE_ID id,LAST_NAME lastName,EMAIL email,
   	GENDER gender from employee where EMPLOYEE_ID = #{id}
+  </select>
+  
+   
+  <select id="querAllWithDis" resultMap="employeeDis">
+    SELECT * from employee
+	where id = #{id}
+  </select> 
+ 
+  
+  <select id="querAll" resultMap="employeeMap">
+  	SELECT * from employee
+  </select> 
+  
+  <select id="queryByIdReturnMap" resultType="map">
+  	SELECT * FROM employee where id = #{id}
+  </select>
+  
+  <select id="queryByJobId" resultMap="employeeSimple">
+  	select * from employee
+  	where job_id = #{jobId}
+  </select>
+  
+  <select id="queryAllToMap" resultType="com.gy.bean.Employee">
+  	SELECT * FROM employee
   </select>
   
   <!-- 

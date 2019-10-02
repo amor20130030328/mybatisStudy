@@ -4,9 +4,20 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gy.mapper.DepartmentMapper">
 
+  <resultMap type="com.gy.bean.Department" id="dep">
+ 		<id column="id" property="id"/>
+ 		<result column="dept_name" property="deptName"/> 
+ 		<result column="location" property="location"/>	
+  </resultMap>
+
   <!--  resultType 中用到了 typeAlias 中的别名 -->
-  <select id="queryById" resultType="department">
+  <select id="queryById" resultMap="dep">
   	 select * from department where id = #{id}
   </select>
+  
+  <insert  id="addDept" parameterType="com.gy.bean.Department">
+  	INSERT INTO department( id , dept_name ,location) 
+  	values(#{id},#{deptName},#{location})
+  </insert>
 
 </mapper>

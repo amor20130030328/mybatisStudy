@@ -1,5 +1,7 @@
 package com.gy.bean;
 
+import java.util.List;
+
 import org.apache.ibatis.type.Alias;
 
 /**
@@ -15,6 +17,9 @@ public class Job {
 	
 	private String jobTitle;
 	
+	
+	private List<Employee> emps;
+ 	
 	public Job() {
 		// TODO Auto-generated constructor stub
 	}
@@ -23,6 +28,16 @@ public class Job {
 		super();
 		this.id = id;
 		this.jobTitle = jobTitle;
+	}
+	
+	
+
+	public List<Employee> getEmps() {
+		return emps;
+	}
+
+	public void setEmps(List<Employee> emps) {
+		this.emps = emps;
 	}
 
 	public Integer getId() {
@@ -43,7 +58,7 @@ public class Job {
 
 	@Override
 	public String toString() {
-		return "Job [id=" + id + ", jobTitle=" + jobTitle + "]";
+		return "Job [id=" + id + ", jobTitle=" + jobTitle + ", emps=" + emps + "]";
 	}
 
 }

@@ -13,5 +13,13 @@ public interface DepartmentMapper {
 	 * @return
 	 */
 	Department queryById(@Param("id")Integer id);
+	
+	
+	/**
+	 * 新增部门信息
+	 * @param department
+	 * @return
+	 */
+	Boolean addDept(Department department);
 
 }

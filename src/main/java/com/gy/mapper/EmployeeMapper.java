@@ -1,7 +1,12 @@
 package com.gy.mapper;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.junit.runners.Parameterized.Parameters;
 
 import com.gy.bean.Employee;
 
@@ -58,5 +63,16 @@ public interface EmployeeMapper {
 	
 	public void deleteEmp(@Param("id") Integer id);
 	
+	public List<Employee> querAll();
+	
+	public List<Employee> querAllWithDis(String id);
+	
+	public List<Employee> queryByJobId(@Param("jobId") String jobId);
+	
+	public Map<String, Object> queryByIdReturnMap(@Param("id") String id);
+
+	@MapKey("lastName")
+	public Map<String, Employee> queryAllToMap();
+
 
 }

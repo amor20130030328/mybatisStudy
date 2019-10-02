@@ -3,10 +3,46 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gy.mapper.JobMapper">
+	
+  <!-- 测试关联属性  :  collection -->
+  <!-- 分步查询 -->
+  <resultMap type="com.gy.bean.Job" id="job">
+  	<id column="id" property="id"/>
+	<result column="job_title" property="jobTitle"/>
+	<!--  
+		若有联合外键  column = {key1=column1,key2=column2} 
+		<collection property="emps" column="id" select="com.gy.mapper.EmployeeMapper.queryByJobId">
+		fetchType: 表示使用延迟加载策略
+					lazy : 使用延迟加载
+					eager: 立即加载
+	-->
+    <collection fetchType="lazy" property="emps" column="{jobId=id}" select="com.gy.mapper.EmployeeMapper.queryByJobId">
+    </collection>
+  </resultMap>
+  
+  <!-- 嵌套查询 -->
+  <resultMap type="com.gy.bean.Job" id="jobNesting">
+  	<id column="id" property="id"/>
+	<result column="job_title" property="jobTitle"/>
+    <collection property="emps" ofType="com.gy.bean.Employee" fetchType="lazy">
+    	<id property="id" column="eid"/>
+    	<result property="email" column="email"/>
+    	<result property="lastName" column="last_name"/>
+    	<result property="gender" column="gender"/>
+    	<!-- <result property="deptId" column="dept_id"/> -->
+    </collection> 
+  </resultMap>
 
   <!--  resultType 中用到了 typeAlias 中的别名 -->
-  <select id="queryById" resultType="j">
+  <select id="queryById" resultMap="job">
   	 select * from job where id = #{id}
+  </select>
+  
+  <select id="queryByIdNesting" resultMap="jobNesting">
+  	 SELECT e.`last_name` ,e.`email`,e.`gender`,e.`dept_id`,e.`id` eid ,j.`id`,j.`job_title` FROM `job` j
+	 LEFT JOIN `employee`  e
+	 ON  j.`id` = e.`job_id`
+	 WHERE j.`id` =  #{id}
   </select>
 
 </mapper>
