@@ -4,7 +4,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gy.mapper.EmployeeMapper">
 
-
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"> </cache>
 
   <!-- 简单的映射 -->
   <resultMap type="com.gy.bean.Employee" id="employeeSimple">

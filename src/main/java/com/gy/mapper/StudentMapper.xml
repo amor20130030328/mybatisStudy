@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gy.mapper.StudentMapper">
+
+	<cache></cache>
+
+	<resultMap type="com.gy.bean.Student" id="student">
+		<id column="id" property="id"/>
+		<result column="last_name" property="lastName"/>
+		<result column="class_id" property="classId"/>
+	</resultMap>
+	
+	
+	
+	<select id="queryByConditionIf" resultMap="student">
+		select * from student 
+		
+		<where>   <!-- where 只会去掉第一个and 或  or -->
+			<if test=" id != null and id != ''">
+				id = #{id}
+			</if>
+			<if test=" lastName.trim() != null and lastName.trim() != ''">
+				and last_name = #{lastName}
+			</if>
+			<if test=" classId != null and classId != ''">
+				and class_id = #{classId}
+			</if>
+		</where>
+		
+	</select>
+	
+	
+	<!-- 
+	
+		后面多出的and 或者 or where 标签不能解决
+	    prefix = "" 前缀， trim 标签体中是整个字符串拼串后的结果，prefix给拼串整个字符串加一个前缀
+	    prefixOverrides="": 前缀覆盖，去掉整个字符串前面多余的字符
+	    suffix = "" : 后缀 后缀覆盖，去掉整个字符串后面多余的字符
+	    suffixOverrides="" , 后缀覆盖，去掉整个字符串后面多余的字符
+			
+	 -->
+	
+	<select id="queryByConditionTrim" resultMap="student">
+		select * from student 
+		
+		<trim prefix="where" prefixOverrides="and" suffixOverrides="and">
+			<if test=" id != null and id != ''">
+				id = #{id}
+			</if>
+			<if test=" lastName.trim() != null and lastName.trim() != ''">
+				and last_name = #{lastName}
+			</if>
+			<if test=" classId != null and classId != ''">
+				and class_id = #{classId} and
+			</if>
+		</trim>
+		
+	</select>
+	
+	<select id="queryByConditionChoose" resultMap="student">
+		select * from student 
+		<where>
+			<choose >
+				<when test="lastName !=null">
+					last_name = #{lastName}
+				</when>
+				<when test="id != null">
+					id = #{id}
+				</when>
+			</choose>
+		</where>
+	</select>
+	
+	<select id="queryByIds" resultMap="student" >
+		select * from student
+		<foreach open="where id in  ("  item="id"  close=")" collection="ids" separator="," >
+			#{id}
+		</foreach>
+	</select>
+	
+	
+	
+	<insert id="insertStu" >
+		insert into student(id ,last_name,class_id)
+		values(#{id},#{lastName},#{classId})
+	</insert>
+	
+	<insert id="batchInsert">
+		insert into student(last_name,class_id)
+		values
+		<foreach collection="list"  separator="," item="item">
+			(#{item.lastName},#{item.classId})
+		</foreach>
+	</insert>
+	
+	<insert id="batchInsertMutilQuery">
+		<foreach collection="list"  separator=";" item="item">
+			insert into student(last_name,class_id)
+			values (#{item.lastName},#{item.classId})
+		</foreach>
+	</insert>
+	
+	<insert id="batchInsertWithOracle">
+		<foreach open="begin" collection="list" item="item" close="end;" >
+			INSERT INTO student(id,last_name,class_id)
+			values(SEQ_STU.nextval,#{item.lastName},#{item.classId});
+		</foreach>		
+	</insert>
+	
+	<!-- 中间表 -->
+	<insert id="batchInsertWithOracleTwo">
+		INSERT INTO student(<include refid="insertColumns"/>) 
+		SELECT SEQ_STU.nextval,lastName,classId FROM (
+			<foreach collection="list" item="item" separator="union">
+				select #{item.lastName} lastName,
+				       #{item.classId} classId
+				from dual
+			</foreach>
+		)
+	</insert>
+	
+
+	
+	<update id="updateTestSet">
+		UPDATE student
+		<set>
+			<if test="lastName!=null">
+				last_name = #{lastName},
+			</if>
+			<if test=" classId != null">
+				class_id = #{classId},
+			</if>
+		</set> 
+		where id = #{id}
+	</update>
+	
+	<select id="getEmployeeByInnerTest" resultMap="student">
+		
+		<if test="_databaseId == 'mysql'">
+			select * from student
+			<where>
+				<if test="_parameter != null">
+					last_name = #{lastName}
+				</if>
+			</where>
+		</if>
+		<if test="_databaseId == 'oracle'">
+			select * from student
+			<where>
+				<if test="_parameter != null">
+					last_name = #{lastName}
+				</if>
+			</where>
+		</if>
+	</select>
+	
+	
+	<select id="queryByLastName" resultType="student">
+		select 
+		<include refid="columnList"/>
+		from student
+		<where>
+			<bind name="_lastName" value="'%'+lastName +'%'"/>
+			last_name like #{_lastName}
+		</where>
+	</select>
+	
+	<sql id="columnList">
+		id , last_name , class_id
+	</sql>
+	
+	<sql id="insertColumns">
+			id,last_name,class_id
+	</sql>
+	
+	<!-- 
+		抽取可重用的sql片段，方便后面引用
+		1、sql抽取，经常将要查询的列名，或者插入用的列名抽取出来方便引用
+		2、include 来引用已经抽取的sql
+		3、include还可以自定义一些property , sql 标签内部就能使用自定义的属性
+			include-property : 取值的正确方式${prop},
+			#{不能使用这种方式}
+	 -->
+	
+	<sql id="insertValue">
+		${id}
+	</sql>
+	
+	
+	<!--  
+		测试一级与二级缓存缓存
+		useCache : 只控制二级缓存
+	 -->
+	<select id="queryById"  resultMap="student" useCache="true">
+		select * from student 
+		where id = #{id}
+	</select>
+	
+ 
+</mapper>

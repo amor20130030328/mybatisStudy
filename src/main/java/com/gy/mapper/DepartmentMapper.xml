@@ -4,6 +4,9 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gy.mapper.DepartmentMapper">
 
+  <!-- 引用缓存  命名空间 :指定和命名空间下的缓存一样 -->
+  <cache-ref namespace="com.gy.mapper.EmployeeMapper"/>
+
   <resultMap type="com.gy.bean.Department" id="dep">
  		<id column="id" property="id"/>
  		<result column="dept_name" property="deptName"/> 

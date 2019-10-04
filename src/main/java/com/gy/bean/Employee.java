@@ -1,9 +1,16 @@
 package com.gy.bean;
 
+import java.io.Serializable;
+
 import com.gy.constant.GenderEnum;
 
-public class Employee {
+public class Employee implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3845799014496417660L;
+
 	private Integer id;
 	
 	private String lastName;
